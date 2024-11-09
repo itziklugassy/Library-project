@@ -5,7 +5,7 @@ from .views import (
     CustomerViewSet, 
     LoanViewSet, 
     register_user, 
-    get_user_info  # Add this import
+    get_user_info
 )
 
 router = DefaultRouter()
@@ -16,5 +16,5 @@ router.register(r'loans', LoanViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('register/', register_user, name='register'),
-    path('users/me/', get_user_info, name='user-info'),  # Add this line
+    path('users/me/', get_user_info, name='user-info'),
 ]
