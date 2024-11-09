@@ -114,7 +114,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
     "https://library-frontend-azde.onrender.com/",
-    "https://library-project-edii.onrender.com/api",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
