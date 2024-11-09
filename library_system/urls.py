@@ -13,8 +13,8 @@ def api_root(request):
             "api": "/api/",
             "token": "/api/token/",
             "token_refresh": "/api/token/refresh/",
-            "register": "/api/register/",  # Add this
-            "users": "/api/users/me/"      # Add this
+            "register": "/api/register/",
+            "users": "/api/users/me/"
         },
         "documentation": "Welcome to the Library API. Please use the endpoints above.",
         "status": "API is running"
@@ -26,7 +26,19 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include('library.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
+# Serve media files in both debug and production
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve static files only in debug mode
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+else:
+    # Add media handling for production
+    from django.views.static import serve
+    urlpatterns += [
+        path('media/<path:path>', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
