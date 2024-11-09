@@ -3,14 +3,17 @@ Django settings for library_system project.
 """
 import dj_database_url
 import os
+import mimetypes
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
+# Add mime types
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/javascript", ".js", True)
 
 # load .env file
 load_dotenv()
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'library-project-edii.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -45,12 +52,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://library-frontend-azde.onrender.com",
     "https://library-project-edii.onrender.com"
 ]
+
 ROOT_URLCONF = 'library_system.urls'
 
 TEMPLATES = [
@@ -64,7 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # Add this line
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -75,7 +83,6 @@ WSGI_APPLICATION = 'library_system.wsgi.application'
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600
     )
@@ -140,9 +147,14 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# Media files
+# Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# File upload settings
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 
 # Create media directories if they don't exist
 MEDIA_DIRS = [
@@ -152,25 +164,21 @@ MEDIA_DIRS = [
 for dir_path in MEDIA_DIRS:
     os.makedirs(dir_path, exist_ok=True)
 
-# Static files
+# Static files configuration
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-        
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# This production code might break development mode, so we check whether we're in DEBUG mode
-if not DEBUG:
-    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
 # Create static directory if it doesn't exist
 os.makedirs(os.path.join(BASE_DIR, 'static'), exist_ok=True)
+
+# Production settings
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
