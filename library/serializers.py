@@ -14,11 +14,8 @@ class BookSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            if hasattr(obj.image, 'url'):
-                request = self.context.get('request')
-                if request is not None:
-                    return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            # Return the full URL to the image
+            return f"https://library-project-edii.onrender.com/media/books/{obj.image.name.split('/')[-1]}"
         return None
 
     def get_is_loaned(self, obj):
