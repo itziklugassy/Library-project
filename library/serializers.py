@@ -14,9 +14,11 @@ class BookSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
+            if hasattr(obj.image, 'url'):
+                request = self.context.get('request')
+                if request is not None:
+                    return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
         return None
 
     def get_is_loaned(self, obj):
