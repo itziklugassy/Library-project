@@ -14,8 +14,13 @@ class BookSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            # Return the full URL to the image
-            return f"https://library-project-edii.onrender.com/media/books/{obj.image.name.split('/')[-1]}"
+            try:
+                from urllib.parse import quote
+                image_name = quote(obj.image.name)
+                return f"https://library-project-edii.onrender.com/media/{image_name}"
+            except Exception as e:
+                 print(f"Error creating image URL: {e}")
+                 return None
         return None
 
     def get_is_loaned(self, obj):
